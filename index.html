@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Daisy's | 22 & Beyond</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@300;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
@@ -21,9 +21,10 @@
             color: white;
             font-family: 'Montserrat', sans-serif;
             overflow: hidden;
-            height: 100vh;
+            /* Use dynamic viewport height to fix mobile browser URL bar issues */
+            height: 100dvh; 
             width: 100vw;
-            position: fixed; /* Prevents mobile scroll lag */
+            position: fixed; 
         }
 
         /* GPU Layer for Particles */
@@ -44,19 +45,20 @@
             justify-content: center;
             align-items: center;
             z-index: 2;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         .section {
             position: absolute;
             width: 90%;
             max-width: 1200px;
+            max-height: 95dvh; /* Prevent overflowing the screen */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             visibility: hidden;
             text-align: center;
-            /* Force GPU to handle transitions */
             transform: translate3d(0,0,0);
             will-change: transform, opacity;
             backface-visibility: hidden;
@@ -67,7 +69,7 @@
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
-            padding: 40px 20px;
+            padding: clamp(20px, 5vh, 40px) 20px;
             border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             width: 100%;
@@ -79,7 +81,7 @@
             border: none;
             border-bottom: 2px solid var(--deep-pink);
             color: white;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-size: clamp(1.2rem, 5vw, 2.5rem);
             text-align: center;
             outline: none;
             font-family: 'Syncopate', sans-serif;
@@ -90,15 +92,21 @@
         /* --- STAGE 2: 3D GRID --- */
         .photo-space {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            /* Default to 3 columns on mobile so 8 items = 3 rows (prevents height overflow) */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             width: 100%;
             max-width: 900px;
-            transform: rotateX(15deg) rotateY(-10deg);
+            transform: rotateX(10deg) rotateY(-5deg); /* Slightly reduced for mobile */
             transform-style: preserve-3d;
         }
-        @media (min-width: 768px) {
-            .photo-space { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+        @media (min-width: 600px) {
+            .photo-space { 
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 15px; 
+                transform: rotateX(15deg) rotateY(-10deg);
+            }
         }
 
         .b-img {
@@ -109,7 +117,6 @@
             object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            /* Vital for mobile video performance */
             will-change: transform;
             transform: translateZ(0);
         }
@@ -117,16 +124,19 @@
         /* --- STAGE 3: HERO --- */
         .number-22 {
             font-family: 'Syncopate', sans-serif;
-            font-size: clamp(8rem, 25vw, 15rem);
+            /* Reduced minimum from 8rem to 5rem for small screens */
+            font-size: clamp(5rem, 25vw, 15rem);
+            line-height: 1;
             background: linear-gradient(to bottom, #fff, var(--deep-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 30px var(--deep-pink));
         }
-        .avatar { margin-top: -60px; z-index: 10; }
+        
+        .avatar { margin-top: clamp(-40px, -10vw, -60px); z-index: 10; }
         .avatar img {
-            width: clamp(120px, 25vw, 180px);
-            height: clamp(120px, 25vw, 180px);
+            width: clamp(100px, 20vw, 180px);
+            height: clamp(100px, 20vw, 180px);
             object-fit: cover;
             border-radius: 50%;
             border: 4px solid var(--gold);
@@ -134,19 +144,23 @@
         }
 
         /* --- STAGE 4: TEXT --- */
-        .final-text { font-family: 'Dancing Script', cursive; font-size: clamp(2rem, 8vw, 4rem); line-height: 1.2; }
+        .final-text { 
+            font-family: 'Dancing Script', cursive; 
+            font-size: clamp(1.8rem, 6vw, 4rem); 
+            line-height: 1.2; 
+        }
         .pidgin {
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(0.9rem, 4vw, 1.3rem);
-            letter-spacing: 3px;
+            font-size: clamp(0.75rem, 3vw, 1.3rem);
+            letter-spacing: 2px;
             color: var(--gold);
-            margin-top: 30px;
+            margin-top: 20px;
             text-transform: uppercase;
             font-weight: 600;
         }
 
         button {
-            margin-top: 40px;
+            margin-top: clamp(20px, 5vh, 40px);
             background: var(--deep-pink);
             color: white;
             border: none;
@@ -156,7 +170,20 @@
             font-size: 0.7rem;
             cursor: pointer;
             letter-spacing: 2px;
-            transform: translateZ(0); /* GPU acceleration for button hover */
+            transform: translateZ(0); 
+        }
+
+        /* --- LANDSCAPE MOBILE SAFEGUARDS --- */
+        @media (max-height: 500px) {
+            .number-22 { font-size: clamp(4rem, 20vh, 8rem); }
+            .avatar { margin-top: -20px; }
+            .avatar img { width: 80px; height: 80px; }
+            .photo-space {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 5px;
+            }
+            .b-img { aspect-ratio: 16/9; } /* Flatten videos to fit height */
+            .section h1 { font-size: 1.2rem !important; margin-bottom: 10px !important; }
         }
     </style>
 </head>
@@ -185,21 +212,21 @@
         <div id="stage3" class="section">
             <div class="number-22">22</div>
             <div class="avatar"><img src="./profile.jpg" alt="DAISY"></div>
-            <h2 style="font-family: 'Syncopate'; font-size: 1rem; margin-top: 20px;">CHAPTER TWENTY TWO</h2>
+            <h2 style="font-family: 'Syncopate'; font-size: clamp(0.7rem, 3vw, 1rem); margin-top: 20px;">CHAPTER TWENTY TWO</h2>
             <button onclick="toStage4()">HONESTLY</button>
         </div>
 
         <div id="stage4" class="section">
             <div class="final-text">"You're hard not to love... <br>actually, it's impossible."</div>
             <div class="pidgin">the first day i saw my eyes on you i'm very fall in love... <br>see right now na only you fit quench my fire 😂</div>
-            <p style="margin-top: 50px; opacity: 0.7;">Enjoy your day, ESPOSA❤️. ✨</p>
+            <p style="margin-top: clamp(20px, 5vh, 50px); opacity: 0.7;">Enjoy your day, ESPOSA❤️. ✨</p>
         </div>
     </div>
 
     <script>
         // 1. Optimized Particle Logic (Still 50 particles!)
         const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d', { alpha: true }); // Faster rendering mode
+        const ctx = canvas.getContext('2d', { alpha: true }); 
         let particles = [];
 
         function resize() {
@@ -215,7 +242,7 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height - canvas.height;
                 this.size = Math.random() * 15 + 5;
-                this.speed = Math.random() * 1.5 + 0.5; // Slightly slower for smoother look
+                this.speed = Math.random() * 1.5 + 0.5;
                 this.content = Math.random() > 0.5 ? '❤️' : '✨';
                 this.opacity = Math.random() * 0.6 + 0.2;
             }
@@ -230,12 +257,10 @@
             }
         }
 
-        // FULL 50 Particles
         for(let i=0; i<50; i++) particles.push(new Particle());
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Using a for-loop instead of forEach (Faster on mobile)
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
@@ -258,12 +283,12 @@
             grid.appendChild(vid);
         }
 
-        // 3. Navigation with Display-Swap (Huge performance gain)
+        // 3. Navigation with Display-Swap
         const nameInput = document.getElementById('nameKey');
         nameInput.addEventListener('input', (e) => {
             if(e.target.value.toLowerCase() === 'daisy') {
                 gsap.to("#stage1", { duration: 0.6, z: 500, opacity: 0, ease: "power2.in", onComplete: () => {
-                    document.getElementById('stage1').style.display = 'none'; // Unload completely
+                    document.getElementById('stage1').style.display = 'none'; 
                     showStage2();
                 }});
             }
@@ -276,7 +301,6 @@
             const s2 = document.getElementById('stage2');
             s2.style.visibility = 'visible';
             
-            // Start videos ONLY when shown to save initial RAM
             document.querySelectorAll('video').forEach(v => v.play());
 
             gsap.from(s2, { duration: 1, z: -1000, opacity: 0, ease: "expo.out" });
